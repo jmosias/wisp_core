@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const productCollectionSchema = mongoose.Schema(
   {
-    collectionPrefix: {
+    name: {
       type: String,
       required: true,
     },

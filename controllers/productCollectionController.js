@@ -3,13 +3,10 @@ import { ProductCollection } from "../models/productCollectionModel.js";
 // POST create collection
 export const createProductCollection = async (request, response) => {
   try {
-    if (!request.body.collectionPrefix) {
-      return response.status(400).send({
-        message: "Send all required fields: collectionPrefix",
-      });
-    }
-
-    const productCollection = await ProductCollection.create(request.body);
+    const { collectionPrefix } = request.body;
+    const productCollection = await ProductCollection.create({
+      collectionPrefix,
+    });
     return response.status(201).send(productCollection);
   } catch (error) {
     response.status(500).send({ message: error.message });
@@ -30,6 +27,13 @@ export const getAllProductCollection = async (request, response) => {
 export const getProductCollectionById = async (request, response) => {
   try {
     const { id } = request.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return response
+        .status(404)
+        .json({ message: "Product Collection not found" });
+    }
+
     const productCollection = await ProductCollection.findById(id);
     return response.status(200).json(productCollection);
   } catch (error) {
@@ -40,13 +44,20 @@ export const getProductCollectionById = async (request, response) => {
 // PUT update one by id
 export const updateProductCollectionById = async (request, response) => {
   try {
+    const { id } = request.params;
+
     if (!request.body.collectionPrefix) {
       return response.status(400).send({
         message: "Send all required fields: collectionPrefix",
       });
     }
 
-    const { id } = request.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return response
+        .status(404)
+        .json({ message: "Product Collection not found" });
+    }
+
     const result = await ProductCollection.findByIdAndUpdate(id, request.body);
 
     if (!result) {
@@ -67,12 +78,21 @@ export const updateProductCollectionById = async (request, response) => {
 export const deleteProductCollectionById = async (request, response) => {
   try {
     const { id } = request.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return response
+        .status(404)
+        .json({ message: "Product Collection not found" });
+    }
+
     const result = await ProductCollection.findByIdAndDelete(id);
+
     if (!result) {
       return response
         .status(404)
         .json({ message: "Product Collection not found" });
     }
+
     return response
       .status(200)
       .send({ message: "Product Collection deleted successfully" });

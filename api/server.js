@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import { connectDB } from "../config/mongoose.js";
 import productCollectionRoutes from "../routes/productCollectionRoutes.js";
+import userRoutes from "../routes/userRoutes.js";
 
 const PORT = process.env.PORT;
 const CORS_ALLOWED_ORIGINS = process.env.CORS_ALLOWED_ORIGINS;
@@ -24,7 +25,8 @@ app.use(
 app.use(express.json());
 
 // Routes
-app.use("/api/productCollections", productCollectionRoutes);
+app.use("/productCollections", productCollectionRoutes);
+app.use("/user", userRoutes);
 
 const startServer = async () => {
   try {
