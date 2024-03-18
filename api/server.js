@@ -4,6 +4,7 @@ import cors from "cors";
 import { connectDB } from "../config/mongoose.js";
 import productCollectionRoutes from "../routes/productCollectionRoutes.js";
 import userRoutes from "../routes/userRoutes.js";
+import cookieParser from "cookie-parser";
 
 const PORT = process.env.PORT;
 const CORS_ALLOWED_ORIGINS = process.env.CORS_ALLOWED_ORIGINS;
@@ -15,11 +16,13 @@ const allowedOriginsArray = CORS_ALLOWED_ORIGINS.split(",").map((item) =>
 const app = express();
 
 // Middlewares
+app.use(cookieParser());
 app.use(
   cors({
     origin: allowedOriginsArray,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type"],
+    credentials: true,
   })
 );
 app.use(express.json());
