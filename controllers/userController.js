@@ -26,10 +26,10 @@ export const userLogin = async (request, response, next) => {
 
 // POST > Register
 export const userRegister = async (request, response, next) => {
-  const { email, password } = request.body;
+  const { email, password, organizationName } = request.body;
 
   try {
-    await User.register(email, password);
+    await User.register(email, password, organizationName);
     response.status(201).json({ message: "Registered Successfully" });
   } catch (error) {
     next(error);
