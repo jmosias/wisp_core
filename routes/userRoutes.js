@@ -9,16 +9,10 @@ import { authenticate } from "../middlewares/authentication.js";
 
 const router = express.Router();
 
-// /login
+// /user
 router.post("/login", userLogin);
-
-// /register
 router.post("/register", userRegister);
-
-// /logout
 router.post("/logout", userLogout);
-
-// /info
 router.get("/info", authenticate, getUserInfo);
 
 export default router;

@@ -5,10 +5,15 @@ import {
   throwNotFoundError,
 } from "../middlewares/errorHandling.js";
 
-// POST create collection
+// POST > Create a collection
 export const createProductCollection = async (request, response, next) => {
   try {
     const { name, templateId } = request.body;
+
+    if (!name || !templateId) {
+      throwMissingFieldsError(["name", "templateId"], { name, templateId });
+    }
+
     const productCollection = await ProductCollection.create({
       userId: request.user._id,
       name,
@@ -20,7 +25,7 @@ export const createProductCollection = async (request, response, next) => {
   }
 };
 
-// GET all from current user
+// GET > Get all collections from the logged in user
 export const getAllProductCollection = async (request, response, next) => {
   try {
     const productCollections = await ProductCollection.find({
@@ -32,7 +37,7 @@ export const getAllProductCollection = async (request, response, next) => {
   }
 };
 
-// GET one by id
+// GET > Get a collection by id
 export const getProductCollectionById = async (request, response, next) => {
   try {
     const { id } = request.params;
@@ -48,21 +53,24 @@ export const getProductCollectionById = async (request, response, next) => {
   }
 };
 
-// PUT update one by id
+// PUT > Update a collection by id
 export const updateProductCollectionById = async (request, response, next) => {
   try {
     const { id } = request.params;
     const { name, templateId } = request.body;
 
     if (!name || !templateId) {
-      throwMissingFieldsError(["name", "templateId"], request.body);
+      throwMissingFieldsError(["name", "templateId"], { name, templateId });
     }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throwNotFoundError("Product Collection");
     }
 
-    const result = await ProductCollection.findByIdAndUpdate(id, request.body);
+    const result = await ProductCollection.findByIdAndUpdate(id, {
+      name,
+      templateId,
+    });
 
     if (!result) {
       throwNotFoundError("Product Collection");
@@ -76,7 +84,7 @@ export const updateProductCollectionById = async (request, response, next) => {
   }
 };
 
-// DELETE one by id
+// DELETE > Delete a collection by id
 export const deleteProductCollectionById = async (request, response, next) => {
   try {
     const { id } = request.params;

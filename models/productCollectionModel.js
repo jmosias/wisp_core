@@ -7,14 +7,14 @@ const productCollectionSchema = mongoose.Schema(
       required: true,
       ref: "User",
     },
-    name: {
-      type: String,
-      required: true,
-    },
     templateId: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: "ProductTemplate",
+    },
+    name: {
+      type: String,
+      required: true,
     },
   },
   {

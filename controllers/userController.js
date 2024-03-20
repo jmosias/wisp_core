@@ -5,7 +5,7 @@ const createToken = (_id) => {
   return jwt.sign({ _id }, process.env.SECRET_TOKEN, { expiresIn: "30d" });
 };
 
-// POST login
+// POST > Login
 export const userLogin = async (request, response, next) => {
   const { email, password } = request.body;
 
@@ -24,7 +24,7 @@ export const userLogin = async (request, response, next) => {
   }
 };
 
-// POST register
+// POST > Register
 export const userRegister = async (request, response, next) => {
   const { email, password } = request.body;
 
@@ -36,7 +36,7 @@ export const userRegister = async (request, response, next) => {
   }
 };
 
-// POST logout
+// POST > Logout
 export const userLogout = async (request, response, next) => {
   try {
     await response.cookie("jwt", "", { maxAge: 0 });
@@ -46,7 +46,7 @@ export const userLogout = async (request, response, next) => {
   }
 };
 
-// GET info
+// GET > Get the user info of the logged in user
 export const getUserInfo = async (request, response, next) => {
   try {
     const user = await User.findOne({ _id: request.user._id });

@@ -23,7 +23,7 @@ const userSchema = mongoose.Schema(
   }
 );
 
-// static login
+// Static Login
 userSchema.statics.login = async function (email, password) {
   if (!email || !password) {
     throwMissingFieldsError(["email", "password"], { email, password });
@@ -44,7 +44,7 @@ userSchema.statics.login = async function (email, password) {
   return user;
 };
 
-// static register
+// Static Register
 userSchema.statics.register = async function (email, password) {
   if (!email || !password) {
     throwMissingFieldsError(["email", "password"], { email, password });
