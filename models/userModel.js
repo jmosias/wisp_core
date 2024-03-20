@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import validator from "validator";
+import {
+  throwError,
+  throwMissingFieldsError,
+} from "../middlewares/errorHandling.js";
 
 const userSchema = mongoose.Schema(
   {
@@ -22,19 +26,19 @@ const userSchema = mongoose.Schema(
 // static login
 userSchema.statics.login = async function (email, password) {
   if (!email || !password) {
-    throw Error("All fields must be filled");
+    throwMissingFieldsError(["email", "password"], { email, password });
   }
 
   const user = await this.findOne({ email });
 
   if (!user) {
-    throw Error("Invalid login credentials");
+    throwError(401, "Invalid login credentials");
   }
 
   const match = await bcrypt.compare(password, user.password);
 
   if (!match) {
-    throw Error("Invalid login credentials");
+    throwError(401, "Invalid login credentials");
   }
 
   return user;
@@ -43,18 +47,18 @@ userSchema.statics.login = async function (email, password) {
 // static register
 userSchema.statics.register = async function (email, password) {
   if (!email || !password) {
-    throw Error("All fields must be filled");
+    throwMissingFieldsError(["email", "password"], { email, password });
   }
   if (!validator.isEmail(email)) {
-    throw Error("Email is not valid");
+    throwError(400, "Please provide an email address");
   }
   if (!validator.isStrongPassword(password)) {
-    throw Error("Password not strong enough");
+    throwError(400, "Please provide a strong password");
   }
 
   const exists = await this.findOne({ email });
   if (exists) {
-    throw Error("Email already in use");
+    throwError(409, "This email is already in use");
   }
 
   const salt = await bcrypt.genSalt(12);

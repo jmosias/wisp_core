@@ -6,7 +6,7 @@ const createToken = (_id) => {
 };
 
 // POST login
-export const userLogin = async (request, response) => {
+export const userLogin = async (request, response, next) => {
   const { email, password } = request.body;
 
   try {
@@ -20,51 +20,41 @@ export const userLogin = async (request, response) => {
 
     response.status(200).json({ message: "Login Successful" });
   } catch (error) {
-    return response.status(400).json({ message: error.message });
+    next(error);
   }
 };
 
 // POST register
-export const userRegister = async (request, response) => {
+export const userRegister = async (request, response, next) => {
   const { email, password } = request.body;
 
   try {
-    const user = await User.register(email, password);
-    const token = createToken(user._id);
-    response.status(201).json({ email, token });
+    await User.register(email, password);
+    response.status(201).json({ message: "Registered Successfully" });
   } catch (error) {
-    return response.status(400).json({ message: error.message });
-  }
-};
-
-// GET info
-export const getUserInfo = async (request, response) => {
-  try {
-    const tokenCookie = request.cookies["jwt"];
-    const claims = jwt.verify(tokenCookie, process.env.SECRET_TOKEN);
-
-    if (!claims) {
-      return response.status(401).send({
-        message: "Unauthenticated",
-      });
-    }
-
-    const user = await User.findOne({ _id: claims._id });
-
-    // removes the password first
-    const { password, ...userInfo } = await user.toJSON();
-
-    response.send({ userInfo });
-  } catch (error) {
-    return response.status(401).send({
-      message: "Unauthenticated",
-    });
+    next(error);
   }
 };
 
 // POST logout
-export const userLogout = async (request, response) => {
-  response.cookie("jwt", "", { maxAge: 0 });
+export const userLogout = async (request, response, next) => {
+  try {
+    await response.cookie("jwt", "", { maxAge: 0 });
+    response.send({ message: "Logout Successful" });
+  } catch (error) {
+    next(error);
+  }
+};
 
-  response.send({ message: "Logout Successful" });
+// GET info
+export const getUserInfo = async (request, response, next) => {
+  try {
+    const user = await User.findOne({ _id: request.user._id });
+    // remove the password
+    const { password, ...userInfo } = await user.toJSON();
+
+    response.send({ userInfo });
+  } catch (error) {
+    next(error);
+  }
 };

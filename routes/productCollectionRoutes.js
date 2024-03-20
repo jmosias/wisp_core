@@ -6,14 +6,15 @@ import {
   updateProductCollectionById,
   deleteProductCollectionById,
 } from "../controllers/productCollectionController.js";
+import { authenticate } from "../middlewares/authentication.js";
 
 const router = express.Router();
 
 // /productCollections
-router.post("/", createProductCollection);
-router.get("/", getAllProductCollection);
-router.get("/:id", getProductCollectionById);
-router.put("/:id", updateProductCollectionById);
-router.delete("/:id", deleteProductCollectionById);
+router.post("/", authenticate, createProductCollection);
+router.get("/", authenticate, getAllProductCollection);
+router.get("/:id", authenticate, getProductCollectionById);
+router.put("/:id", authenticate, updateProductCollectionById);
+router.delete("/:id", authenticate, deleteProductCollectionById);
 
 export default router;

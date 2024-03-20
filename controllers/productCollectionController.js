@@ -1,102 +1,100 @@
+import mongoose from "mongoose";
 import { ProductCollection } from "../models/productCollectionModel.js";
+import {
+  throwMissingFieldsError,
+  throwNotFoundError,
+} from "../middlewares/errorHandling.js";
 
 // POST create collection
-export const createProductCollection = async (request, response) => {
+export const createProductCollection = async (request, response, next) => {
   try {
-    const { collectionPrefix } = request.body;
+    const { name, templateId } = request.body;
     const productCollection = await ProductCollection.create({
-      collectionPrefix,
+      userId: request.user._id,
+      name,
+      templateId,
     });
-    return response.status(201).send(productCollection);
+    response.status(201).send(productCollection);
   } catch (error) {
-    response.status(500).send({ message: error.message });
+    next(error);
   }
 };
 
-// GET all
-export const getAllProductCollection = async (request, response) => {
+// GET all from current user
+export const getAllProductCollection = async (request, response, next) => {
   try {
-    const productCollections = await ProductCollection.find();
-    return response.status(200).json(productCollections);
+    const productCollections = await ProductCollection.find({
+      userId: request.user._id,
+    });
+    response.status(200).json(productCollections);
   } catch (error) {
-    response.status(500).send({ message: error.message });
+    next(error);
   }
 };
 
 // GET one by id
-export const getProductCollectionById = async (request, response) => {
+export const getProductCollectionById = async (request, response, next) => {
   try {
     const { id } = request.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return response
-        .status(404)
-        .json({ message: "Product Collection not found" });
+      throwNotFoundError("Product Collection");
     }
 
     const productCollection = await ProductCollection.findById(id);
-    return response.status(200).json(productCollection);
+    response.status(200).json(productCollection);
   } catch (error) {
-    response.status(500).send({ message: error.message });
+    next(error);
   }
 };
 
 // PUT update one by id
-export const updateProductCollectionById = async (request, response) => {
+export const updateProductCollectionById = async (request, response, next) => {
   try {
     const { id } = request.params;
+    const { name, templateId } = request.body;
 
-    if (!request.body.collectionPrefix) {
-      return response.status(400).send({
-        message: "Send all required fields: collectionPrefix",
-      });
+    if (!name || !templateId) {
+      throwMissingFieldsError(["name", "templateId"], request.body);
     }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return response
-        .status(404)
-        .json({ message: "Product Collection not found" });
+      throwNotFoundError("Product Collection");
     }
 
     const result = await ProductCollection.findByIdAndUpdate(id, request.body);
 
     if (!result) {
-      return response
-        .status(404)
-        .json({ message: "Product Collection not found" });
+      throwNotFoundError("Product Collection");
     }
 
-    return response
+    response
       .status(200)
       .send({ message: "Product Collection updated successfully" });
   } catch (error) {
-    response.status(500).send({ message: error.message });
+    next(error);
   }
 };
 
 // DELETE one by id
-export const deleteProductCollectionById = async (request, response) => {
+export const deleteProductCollectionById = async (request, response, next) => {
   try {
     const { id } = request.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return response
-        .status(404)
-        .json({ message: "Product Collection not found" });
+      throwNotFoundError("Product Collection");
     }
 
     const result = await ProductCollection.findByIdAndDelete(id);
 
     if (!result) {
-      return response
-        .status(404)
-        .json({ message: "Product Collection not found" });
+      throwNotFoundError("Product Collection");
     }
 
-    return response
+    response
       .status(200)
       .send({ message: "Product Collection deleted successfully" });
   } catch (error) {
-    response.status(500).send({ message: error.message });
+    next(error);
   }
 };
