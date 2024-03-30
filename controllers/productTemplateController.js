@@ -74,9 +74,7 @@ export const updateProductTemplateById = async (request, response, next) => {
       throwNotFoundError("Product Template");
     }
 
-    response
-      .status(200)
-      .send({ message: "Product Template updated successfully" });
+    response.status(204).send();
   } catch (error) {
     next(error);
   }
@@ -97,9 +95,7 @@ export const deleteProductTemplateById = async (request, response, next) => {
       throwNotFoundError("Product Template");
     }
 
-    response
-      .status(200)
-      .send({ message: "Product Template deleted successfully" });
+    response.status(204).send();
   } catch (error) {
     next(error);
   }

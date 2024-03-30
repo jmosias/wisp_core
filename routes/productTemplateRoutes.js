@@ -12,9 +12,12 @@ const router = express.Router();
 
 // /productTemplates
 router.post("/", authenticate, createProductTemplate);
-router.get("/", authenticate, getAllProductTemplate);
+
 router.get("/:id", authenticate, getProductTemplateById);
+router.get("/", authenticate, getAllProductTemplate);
+
 router.put("/:id", authenticate, updateProductTemplateById);
+
 router.delete("/:id", authenticate, deleteProductTemplateById);
 
 export default router;

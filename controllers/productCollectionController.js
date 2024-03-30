@@ -8,16 +8,21 @@ import {
 // POST > Create a collection
 export const createProductCollection = async (request, response, next) => {
   try {
-    const { name, templateId } = request.body;
+    const { templateId, name, codePrefix } = request.body;
 
-    if (!name || !templateId) {
-      throwMissingFieldsError(["name", "templateId"], { name, templateId });
+    if (!templateId || !name || !codePrefix) {
+      throwMissingFieldsError(["templateId", "name", "codePrefix"], {
+        templateId,
+        name,
+        codePrefix,
+      });
     }
 
     const productCollection = await ProductCollection.create({
       userId: request.user._id,
-      name,
       templateId,
+      name,
+      codePrefix,
     });
     response.status(201).send(productCollection);
   } catch (error) {
@@ -57,10 +62,14 @@ export const getProductCollectionById = async (request, response, next) => {
 export const updateProductCollectionById = async (request, response, next) => {
   try {
     const { id } = request.params;
-    const { name, templateId } = request.body;
+    const { templateId, name, codePrefix } = request.body;
 
-    if (!name || !templateId) {
-      throwMissingFieldsError(["name", "templateId"], { name, templateId });
+    if (!templateId || !name || !codePrefix) {
+      throwMissingFieldsError(["templateId", "name", "codePrefix"], {
+        templateId,
+        name,
+        codePrefix,
+      });
     }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -70,15 +79,14 @@ export const updateProductCollectionById = async (request, response, next) => {
     const result = await ProductCollection.findByIdAndUpdate(id, {
       name,
       templateId,
+      codePrefix,
     });
 
     if (!result) {
       throwNotFoundError("Product Collection");
     }
 
-    response
-      .status(200)
-      .send({ message: "Product Collection updated successfully" });
+    response.status(204).send();
   } catch (error) {
     next(error);
   }
@@ -99,9 +107,7 @@ export const deleteProductCollectionById = async (request, response, next) => {
       throwNotFoundError("Product Collection");
     }
 
-    response
-      .status(200)
-      .send({ message: "Product Collection deleted successfully" });
+    response.status(204).send();
   } catch (error) {
     next(error);
   }

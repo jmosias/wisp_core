@@ -14,6 +14,8 @@ export const userLogin = async (request, response, next) => {
     const token = createToken(user._id);
 
     response.cookie("jwt", token, {
+      sameSite: "None",
+      secure: true,
       httpOnly: true,
       maxAge: 30 * 24 * 60 * 60 * 60 * 1000, // 30 days
     });

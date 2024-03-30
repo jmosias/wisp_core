@@ -12,9 +12,12 @@ const router = express.Router();
 
 // /productCollections
 router.post("/", authenticate, createProductCollection);
-router.get("/", authenticate, getAllProductCollection);
+
 router.get("/:id", authenticate, getProductCollectionById);
+router.get("/", authenticate, getAllProductCollection);
+
 router.put("/:id", authenticate, updateProductCollectionById);
+
 router.delete("/:id", authenticate, deleteProductCollectionById);
 
 export default router;

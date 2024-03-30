@@ -16,6 +16,10 @@ const productCollectionSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    codePrefix: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

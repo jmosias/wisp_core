@@ -8,19 +8,21 @@ import {
 // POST > Create an item
 export const createProductItem = async (request, response, next) => {
   try {
-    const { details, collectionId } = request.body;
+    const { collectionId, details, code } = request.body;
 
-    if (!details || !collectionId) {
-      throwMissingFieldsError(["details", "collectionId"], {
-        details,
+    if (!collectionId || !details || !code) {
+      throwMissingFieldsError(["details", "collectionId", "code"], {
         collectionId,
+        details,
+        code,
       });
     }
 
     const productItem = await ProductItem.create({
       userId: request.user._id,
-      details,
       collectionId,
+      details,
+      code,
     });
     response.status(201).send(productItem);
   } catch (error) {
@@ -60,12 +62,13 @@ export const getProductItemById = async (request, response, next) => {
 export const updateProductItemById = async (request, response, next) => {
   try {
     const { id } = request.params;
-    const { details, collectionId } = request.body;
+    const { collectionId, details, code } = request.body;
 
-    if (!details || !collectionId) {
-      throwMissingFieldsError(["details", "collectionId"], {
-        details,
+    if (!collectionId || !details || !code) {
+      throwMissingFieldsError(["details", "collectionId", "code"], {
         collectionId,
+        details,
+        code,
       });
     }
 
@@ -76,13 +79,29 @@ export const updateProductItemById = async (request, response, next) => {
     const result = await ProductItem.findByIdAndUpdate(id, {
       details,
       collectionId,
+      code,
     });
 
     if (!result) {
       throwNotFoundError("Product Item");
     }
 
-    response.status(200).send({ message: "Product Item updated successfully" });
+    response.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PUT > Update all items from array
+export const updateProductItems = async (request, response, next) => {
+  try {
+    const { items } = request.body;
+
+    for (const item of items) {
+      await ProductItem.updateMany({ _id: item._id }, { $set: item });
+    }
+
+    response.status(204).send();
   } catch (error) {
     next(error);
   }
@@ -103,7 +122,7 @@ export const deleteProductItemById = async (request, response, next) => {
       throwNotFoundError("Product Item");
     }
 
-    response.status(200).send({ message: "Product Item deleted successfully" });
+    response.status(204).send();
   } catch (error) {
     next(error);
   }
