@@ -8,14 +8,15 @@ import {
 // POST > Create a template
 export const createProductTemplate = async (request, response, next) => {
   try {
-    const { names } = request.body;
+    const { name, names } = request.body;
 
-    if (!names) {
-      throwMissingFieldsError(["names"], { names });
+    if (!name || !names) {
+      throwMissingFieldsError(["name", "names"], { name, names });
     }
 
     const productTemplate = await ProductTemplate.create({
       userId: request.user._id,
+      name,
       names,
     });
     response.status(201).send(productTemplate);
@@ -56,10 +57,10 @@ export const getProductTemplateById = async (request, response, next) => {
 export const updateProductTemplateById = async (request, response, next) => {
   try {
     const { id } = request.params;
-    const { names } = request.body;
+    const { name, names } = request.body;
 
-    if (!names) {
-      throwMissingFieldsError(["names"], { names });
+    if (!name || !names) {
+      throwMissingFieldsError(["name", "names"], { name, names });
     }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -67,6 +68,7 @@ export const updateProductTemplateById = async (request, response, next) => {
     }
 
     const result = await ProductTemplate.findByIdAndUpdate(id, {
+      name,
       names,
     });
 
